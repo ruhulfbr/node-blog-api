@@ -1,9 +1,9 @@
-const userController = require("./users.controller");
-const categoryController = require("./categories.controller");
-const postController = require("./posts.controller");
+const userController = require("./UserController");
+const topicController = require("./TopicController");
+const postController = require("./PostController");
 
 module.exports = {
     userController,
-    categoryController,
+    topicController,
     postController,
 };

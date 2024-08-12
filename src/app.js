@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (_request, response) => {
-    response.send({ message: "Bangladesh is out homeland." });
+    response.send({ message: "Welcome to blog Application." });
 });
 
 app.use(routes);

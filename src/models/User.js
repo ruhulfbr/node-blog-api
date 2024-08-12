@@ -1,27 +1,54 @@
-module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define(
-    'User',
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      displayName: DataTypes.STRING,
-      email: DataTypes.STRING,
-      password: DataTypes.STRING,
-      image: DataTypes.STRING,
-    },
-    {
-      timestamps: false,
-      tableName: 'users',
-      underscored: true,
-    },
-  );
+"use strict";
 
-  User.associate = (models) => {
-    User.hasMany(models.BlogPost, { foreignKey: 'user_id', as: 'posts' });
-  };
+const { Model, DataTypes } = require("sequelize");
 
-  return User;
+module.exports = (sequelize) => {
+    class User extends Model {
+        static associate(models) {
+            // Define association here
+            User.hasMany(models.Post, {
+                foreignKey: "user_id",
+                onDelete: "CASCADE",
+            });
+            User.hasMany(models.PostTopic, {
+                foreignKey: "user_id",
+                onDelete: "CASCADE",
+            });
+            User.hasMany(models.UserTopic, {
+                foreignKey: "user_id",
+                onDelete: "CASCADE",
+            });
+        }
+    }
+
+    User.init(
+        {
+            name: DataTypes.STRING,
+            email: {
+                type: DataTypes.STRING,
+                unique: true,
+            },
+            email_verified_at: DataTypes.DATE,
+            password: DataTypes.STRING,
+            avatar: DataTypes.STRING,
+            status: {
+                type: DataTypes.TINYINT,
+                defaultValue: 1,
+            },
+            role: {
+                type: DataTypes.TINYINT,
+                defaultValue: 0,
+            },
+            rememberToken: DataTypes.STRING,
+        },
+        {
+            sequelize,
+            modelName: "User",
+            tableName: "users",
+            timestamps: true,
+            paranoid: true,
+        }
+    );
+
+    return User;
 };

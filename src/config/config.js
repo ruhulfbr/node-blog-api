@@ -1,12 +1,10 @@
 const environment = process.env.NODE_ENV || "test";
 
 const suffix = {
-    dev: "-dev",
-    development: "-dev",
-    test: "-test",
+    dev: "",
+    development: "",
+    test: "",
 };
-
-console.log("sdakshgdh", process.env.DEBUG);
 
 const options = {
     host: process.env.POSTGRES_HOST || "localhost",

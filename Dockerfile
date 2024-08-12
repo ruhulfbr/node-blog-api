@@ -10,6 +10,12 @@ RUN apt install lsof
 # Set the working directory inside the container to /app
 WORKDIR /app
 
+# Change ownership of the working directory
+RUN chown -R node:node /app
+
+# Switch to the node user
+USER node
+
 # Copy package.json and package-lock.json (if present) to the working directory
 COPY package*.json ./
 

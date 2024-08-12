@@ -7,8 +7,8 @@ services:
         container_name: blogs_api
         tty: true
         stdin_open: true
-        command: node src/server.js
-        # command: npm start
+        # command: node src/server.js
+        command: npm run dev
         restart: always
         working_dir: /app
         volumes:

@@ -1,10 +1,10 @@
-const { categoryService } = require("../services");
+const { topicService } = require("../services");
 const { mapError } = require("../utils/errorMap");
 
 const create = async (req, res) => {
     const { name } = req.body;
 
-    const { type, message } = await categoryService.create(name);
+    const { type, message } = await topicService.create(name);
 
     if (type) {
         return res.status(mapError(type)).json({ message });
@@ -14,7 +14,7 @@ const create = async (req, res) => {
 };
 
 const getAll = async (_req, res) => {
-    const { type, message } = await categoryService.getAll();
+    const { type, message } = await topicService.getAll();
 
     if (type) {
         return res.status(mapError(type)).json({ message });

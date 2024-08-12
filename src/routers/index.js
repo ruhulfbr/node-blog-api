@@ -1,14 +1,28 @@
 const express = require("express");
 const userRoutes = require("./users.routes");
 const loginRoute = require("./login.routes");
-const categoryRoutes = require("./categories.routes");
+const topicRoutes = require("./TopicRoutes");
 const postRoutes = require("./posts.routes");
 
 const router = express.Router();
 
 router.use("/user", userRoutes);
 router.use("/login", loginRoute);
-router.use("/categories", categoryRoutes);
+router.use("/topic", topicRoutes);
 router.use("/post", postRoutes);
+
+router.get("/health", (req, res) => {
+    res.status(200).json({
+        status: "UP",
+        timestamp: new Date().toISOString(),
+    });
+});
+
+router.use((req, res, next) => {
+    res.status(404).json({
+        error: "Not Found",
+        message: "The requested resource could not be found.",
+    });
+});
 
 module.exports = router;
