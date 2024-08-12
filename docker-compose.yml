@@ -1,0 +1,75 @@
+version: "3.1"
+
+services:
+    node:
+        build: .
+        user: node
+        container_name: blogs_api
+        tty: true
+        stdin_open: true
+        command: node src/server.js
+        # command: npm start
+        restart: always
+        working_dir: /app
+        volumes:
+            - ./src/:/app/src
+        depends_on:
+            - postgres_db
+        ports:
+            - 3001:3001
+        environment:
+            FORWARD_DB_PORT: "${FORWARD_DB_PORT:-5432}:5432"
+            PGPASSWORD: "${DB_PASSWORD:-secret}"
+            POSTGRES_DB: "${DB_DATABASE}"
+            POSTGRES_USER: "${DB_USERNAME}"
+            POSTGRES_PASSWORD: "${DB_PASSWORD:-secret}"
+            POSTGRES_HOST: "postgres_db"
+            JWT_SECRET: secretJWT
+            API_HOST: "node"
+            API_PORT: 3001
+            NODE_ENV: "development"
+            DEBUG: "false"
+        networks:
+            - blogs_api_net
+
+    postgres_db:
+        image: "postgres:15"
+        restart: always
+        ports:
+            - "${FORWARD_DB_PORT:-5432}:5432"
+        environment:
+            PGPASSWORD: "${DB_PASSWORD:-secret}"
+            POSTGRES_DB: "${DB_DATABASE}"
+            POSTGRES_USER: "${DB_USERNAME}"
+            POSTGRES_PASSWORD: "${DB_PASSWORD:-secret}"
+        volumes:
+            - "blog-api-pgsql:/var/lib/postgresql/data"
+        networks:
+            - blogs_api_net
+        healthcheck:
+            test:
+                - CMD
+                - pg_isready
+                - "-q"
+                - "-d"
+                - "${DB_DATABASE}"
+                - "-U"
+                - "${DB_USERNAME}"
+            retries: 3
+            timeout: 5s
+
+    mailhog:
+        image: "mailhog/mailhog:latest"
+        ports:
+            - "${MAIL_PORT:-1025}:1025"
+            - "${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025"
+        networks:
+            - blogs_api_net
+
+networks:
+    blogs_api_net:
+        driver: bridge
+
+volumes:
+    blog-api-pgsql:
+        driver: local
