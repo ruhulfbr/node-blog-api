@@ -1,92 +1,106 @@
 const { Topic, Post } = require("../models");
 const { Op } = require("sequelize");
 
-class TopicRepository {
-    constructor(limit = 10) {
-        this._limit = limit;
-    }
+/**
+ * Get all topics with optional filters.
+ * @param {Object} filters
+ * @param {number} [limit=10]
+ * @returns {Promise<Object>}
+ */
+const getTopicsWithFilter = async (filters = {}, limit = 10) => {
+    const query = {
+        where: {},
+        limit,
+        order: [["id", "DESC"]],
+    };
 
-    /**
-     * Get all topics with optional filters.
-     * @param {Object} filters
-     * @returns {Promise<Object>}
-     */
-    async getTopicsWithFilter(filters = {}) {
-        const query = {
-            where: {},
-            limit: this._limit,
-            order: [["id", "DESC"]],
+    if (filters.name) {
+        query.where.name = {
+            [Op.like]: `%${filters.name}%`,
         };
-
-        if (filters.name) {
-            query.where.name = {
-                [Op.like]: `%${filters.name}%`,
-            };
-        }
-
-        return Topic.findAndCountAll(query);
     }
 
-    /**
-     * Find a topic by ID.
-     * @param {number} id
-     * @returns {Promise<Topic>}
-     */
-    async findById(id) {
-        return Topic.findByPk(id);
-    }
+    return Topic.findAndCountAll(query);
+};
 
-    /**
-     * Get a topic's posts with pagination.
-     * @param {Topic} topic
-     * @param {number} [limit]
-     * @returns {Promise<Object>}
-     */
-    async getTopicPostsWithPagination(topic, limit = this._limit) {
-        return topic.getPosts({
-            limit,
-            order: [["id", "DESC"]],
-        });
-    }
+/**
+ * Find a topic by ID.
+ * @param {number} id
+ * @returns {Promise<Topic>}
+ */
+const findById = async (id) => {
+    return Topic.findByPk(id);
+};
 
-    /**
-     * Create a new topic.
-     * @param {Object} data
-     * @returns {Promise<Topic>}
-     */
-    async createTopic(data) {
-        const topic = await Topic.create(data);
-        return topic;
-    }
+/**
+ * Find a topic by name.
+ * @param {string} name
+ * @returns {Promise<Topic>}
+ */
+const findByName = async (name) => {
+    return Topic.findOne({
+        where: { name: name },
+    });
+};
 
-    /**
-     * Update a topic's information.
-     * @param {Topic} topic
-     * @param {Object} data
-     * @returns {Promise<Topic>}
-     */
-    async updateTopic(topic, data) {
-        await topic.update(data);
-        return topic;
-    }
+/**
+ * Get a topic's posts with pagination.
+ * @param {Topic} topic
+ * @param {number} [limit=10]
+ * @returns {Promise<Object>}
+ */
+const getTopicPostsWithPagination = async (topic, limit = 10) => {
+    return topic.getPosts({
+        limit,
+        order: [["id", "DESC"]],
+    });
+};
 
-    /**
-     * Delete a topic (soft delete).
-     * @param {Topic} topic
-     * @returns {Promise<boolean>}
-     */
-    async deleteTopic(topic) {
-        return topic.destroy(); // Assuming soft delete is set up in your model
-    }
+/**
+ * Create a new topic.
+ * @param {Object} data
+ * @returns {Promise<Topic>}
+ */
+const createTopic = async (data) => {
+    return Topic.create(data);
+};
 
-    /**
-     * Permanently delete a topic.
-     * @param {Topic} topic
-     * @returns {Promise<boolean>}
-     */
-    async permanentDeleteTopic(topic) {
-        return topic.destroy({ force: true }); // Permanent delete
-    }
-}
+/**
+ * Update a topic's information.
+ * @param {Topic} topic
+ * @param {Object} data
+ * @returns {Promise<Topic>}
+ */
+const updateTopic = async (topic, data) => {
+    await topic.update(data);
+    return topic;
+};
 
-module.exports = new TopicRepository();
+/**
+ * Delete a topic (soft delete).
+ * @param {Topic} topic
+ * @returns {Promise<boolean>}
+ */
+const deleteTopic = async (topic) => {
+    return topic.destroy(); // Assuming soft delete is set up in your model
+};
+
+/**
+ * Permanently delete a topic.
+ * @param {Topic} topic
+ * @returns {Promise<boolean>}
+ */
+const permanentDeleteTopic = async (topic) => {
+    return topic.destroy({ force: true }); // Permanent delete
+};
+
+module.exports = {
+    getTopicsWithFilter,
+    findById,
+    findByName,
+    getTopicPostsWithPagination,
+    createTopic,
+    updateTopic,
+    deleteTopic,
+    permanentDeleteTopic,
+};

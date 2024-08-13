@@ -1,95 +1,166 @@
-const HttpStatus = require("http-status-codes");
-const Service = require("./Service");
-const { TopicRepository } = require("./../repositories");
+const { StatusCodes } = require("http-status-codes");
+const { TopicRepository: repository } = require("./../repositories");
+const { keepLog } = require("./Logger");
+const ServiceResult = require("./ServiceResult");
 
-class TopicService extends Service {
-    constructor() {
-        super();
+const result = new ServiceResult();
 
-        this.repository = new TopicRepository();
+/**
+ * Fetch topics with optional filters.
+ * @param {Object} filters
+ * @returns {Promise<Result>}
+ */
+const getTopics = async (filters) => {
+    try {
+        const topics = await repository.getTopicsWithFilter(filters);
+        result.setData(topics);
+    } catch (exception) {
+        const message = "Failed to fetch topics";
+        keepLog("error", message, exception.message);
+        result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
-    async getTopics(filters) {
-        try {
-            const topics = await this.repository.getTopicsWithFilter(filters);
-            this.result.setData(topics);
-        } catch (exception) {
-            const message = "Failed to fetch topics";
+    return result;
+};
 
-            this.keepLog("error", message, exception.message);
-            this.result.setError(message, HttpStatus.BAD_REQUEST);
+/**
+ * Fetch a topic by its ID.
+ * @param {number} id - The ID of the topic to retrieve.
+ * @returns {Promise<Result>}
+ */
+const getTopicById = async (id) => {
+    try {
+        const topic = await repository.findById(id);
+
+        if (topic) {
+            result.setData(topic);
+
+            return result;
         }
 
-        return this.result;
+        const message = "Topic not found";
+
+        keepLog("error", message);
+        result.setError(message, StatusCodes.NOT_FOUND);
+    } catch (exception) {
+        const message = "Failed to fetch topic";
+
+        keepLog("error", message, exception);
+        result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
-    async createTopic(data) {
-        try {
-            const topic = await this.repository.createTopic(data);
-            this.result.setData(topic);
-        } catch (exception) {
-            const message = "Topic creation failed";
-            this.keepLog("error", message, exception.message);
-            this.result.setError(message, HttpStatus.BAD_REQUEST);
+    return result;
+};
+
+/**
+ * Create a new topic.
+ * @param {Object} data
+ * @returns {Promise<Result>}
+ */
+const createTopic = async (data) => {
+    try {
+        const topic = await repository.createTopic(data);
+        result.setData(topic);
+    } catch (exception) {
+        const message = "Topic creation failed";
+        keepLog("error", message, exception.message);
+        result.setError(message, StatusCodes.BAD_REQUEST);
+    }
+
+    return result;
+};
+
+/**
+ * Update a topic's information.
+ * @param {int} topicId
+ * @param {Object} data
+ * @returns {Promise<Result>}
+ */
+const updateTopic = async (topicId, data) => {
+    try {
+        const topic = await repository.findById(topicId);
+
+        if (!topic) {
+            const message = "Topic not found";
+            keepLog("error", message);
+            result.setError(message, StatusCodes.NOT_FOUND);
+        } else {
+            const updatedTopic = await repository.updateTopic(topic, data);
+            result.setData(updatedTopic);
         }
-
-        return this.result;
+    } catch (exception) {
+        const message = "Topic update failed";
+        keepLog("error", message, exception.message);
+        result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
-    async updateTopic(topic, data) {
-        try {
-            const updatedTopic = await this.repository.updateTopic(topic, data);
-            this.result.setData(updatedTopic);
-        } catch (exception) {
-            const message = "Topic update failed";
-            this.keepLog("error", message, exception.message);
-            this.result.setError(message, HttpStatus.BAD_REQUEST);
-        }
+    return result;
+};
 
-        return this.result;
+/**
+ * Soft delete a topic.
+ * @param {Topic} topic
+ * @returns {Promise<Result>}
+ */
+const deleteTopic = async (topic) => {
+    try {
+        await repository.deleteTopic(topic);
+        result.setDeleted();
+    } catch (exception) {
+        const message = "Topic deletion failed";
+        keepLog("error", message, exception.message);
+        result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
-    async deleteTopic(topic) {
-        try {
-            await this.repository.deleteTopic(topic);
-            this.result.setDeleted();
-        } catch (exception) {
-            const message = "Topic deletion failed";
-            this.keepLog("error", message, exception.message);
-            this.result.setError(message, HttpStatus.BAD_REQUEST);
-        }
+    return result;
+};
 
-        return this.result;
+/**
+ * Permanently delete a topic.
+ * @param {Topic} topic
+ * @returns {Promise<Result>}
+ */
+const permanentDeleteTopic = async (topic) => {
+    try {
+        await repository.permanentDeleteTopic(topic);
+        result.setDeleted();
+    } catch (exception) {
+        const message = "Permanent topic deletion failed";
+        keepLog("error", message, exception.message);
+        result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
-    async permanentDeleteTopic(topic) {
-        try {
-            await this.repository.permanentDeleteTopic(topic);
-            this.result.setDeleted();
-        } catch (exception) {
-            const message = "Permanent topic deletion failed";
-            this.keepLog("error", message, exception.message);
-            this.result.setError(message, HttpStatus.BAD_REQUEST);
-        }
+    return result;
+};
 
-        return this.result;
+/**
+ * Get posts for a topic with pagination.
+ * @param {Topic} topic
+ * @param {number} [limit=10]
+ * @returns {Promise<Result>}
+ */
+const getTopicPosts = async (topic, limit = 10) => {
+    try {
+        const posts = await repository.getTopicPostsWithPagination(
+            topic,
+            limit
+        );
+        result.setData(posts);
+    } catch (exception) {
+        const message = "Failed to fetch topic's posts";
+        keepLog("error", message, exception.message);
+        result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
-    async getTopicPosts(topic) {
-        try {
-            const posts = await this.repository.getTopicPostsWithPagination(
-                topic,
-                10
-            );
-            this.result.setData(posts);
-        } catch (exception) {
-            const message = "Failed to fetch topic's posts";
-            this.keepLog("error", message, exception.message);
-            this.result.setError(message, HttpStatus.BAD_REQUEST);
-        }
+    return result;
+};
 
-        return this.result;
-    }
-}
-
-module.exports = TopicService;
+module.exports = {
+    getTopics,
+    getTopicById,
+    createTopic,
+    updateTopic,
+    deleteTopic,
+    permanentDeleteTopic,
+    getTopicPosts,
+};

@@ -8,8 +8,12 @@ class TopicStatus {
                 return "Active";
             case TopicStatus.INACTIVE:
                 return "Inactive";
+            case "1":
+                return "Active";
+            case "0":
+                return "Inactive";
             default:
-                throw new Error("Invalid topic status");
+                return false;
         }
     }
 }

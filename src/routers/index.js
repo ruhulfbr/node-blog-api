@@ -1,15 +1,15 @@
 const express = require("express");
-const userRoutes = require("./users.routes");
-const loginRoute = require("./login.routes");
+// const userRoutes = require("./users.routes");
+// const loginRoute = require("./login.routes");
 const topicRoutes = require("./TopicRoutes");
-const postRoutes = require("./posts.routes");
+// const postRoutes = require("./posts.routes");
 
 const router = express.Router();
 
-router.use("/user", userRoutes);
-router.use("/login", loginRoute);
-router.use("/topic", topicRoutes);
-router.use("/post", postRoutes);
+// router.use("/user", userRoutes);
+// router.use("/login", loginRoute);
+router.use("/topics", topicRoutes);
+// router.use("/post", postRoutes);
 
 router.get("/health", (req, res) => {
     res.status(200).json({

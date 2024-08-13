@@ -13,6 +13,7 @@ services:
         working_dir: /app
         volumes:
             - ./src/:/app/src
+            - ./logs/:/app/logs
         depends_on:
             - postgres_db
         ports:
