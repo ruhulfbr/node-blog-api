@@ -7,13 +7,9 @@ services:
         container_name: blogs_api
         tty: true
         stdin_open: true
-        # command: node src/server.js
         command: npm run dev
         restart: always
         working_dir: /app
-        volumes:
-            - ./src/:/app/src
-            - ./logs/:/app/logs
         depends_on:
             - postgres_db
         ports:

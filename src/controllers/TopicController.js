@@ -87,19 +87,9 @@ const update = async (req, res) => {
  */
 const destroy = async (req, res) => {
     const { topicId } = req.params;
-    try {
-        const topic = await Topic.findByPk(topicId);
-        if (!topic) {
-            return res.status(404).json({ message: "Topic not found" });
-        }
-        const { type, message } = await topicService.deleteTopic(topic);
-        if (type) {
-            return res.status(mapError(type)).json({ message });
-        }
-        return res.status(204).end(); // No Content
-    } catch (error) {
-        return res.status(500).json({ message: "Failed to delete topic" });
-    }
+    const result = await topicService.deleteTopic(topicId);
+
+    return response.handle(res, result);
 };
 
 module.exports = {

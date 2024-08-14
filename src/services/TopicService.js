@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { TopicRepository: repository } = require("./../repositories");
+const { TopicRepository: repository } = require("../repositories");
 const { keepLog } = require("./Logger");
 const ServiceResult = require("./ServiceResult");
 
@@ -99,13 +99,21 @@ const updateTopic = async (topicId, data) => {
 
 /**
  * Soft delete a topic.
- * @param {Topic} topic
+ * @param {integer} topicId
  * @returns {Promise<Result>}
  */
-const deleteTopic = async (topic) => {
+const deleteTopic = async (topicId) => {
     try {
-        await repository.deleteTopic(topic);
-        result.setDeleted();
+        const topic = await repository.findById(topicId);
+
+        if (!topic) {
+            const message = "Topic not found";
+            keepLog("error", message);
+            result.setError(message, StatusCodes.NOT_FOUND);
+        } else {
+            await repository.deleteTopic(topicId);
+            result.setDeleted();
+        }
     } catch (exception) {
         const message = "Topic deletion failed";
         keepLog("error", message, exception.message);
@@ -117,15 +125,23 @@ const deleteTopic = async (topic) => {
 
 /**
  * Permanently delete a topic.
- * @param {Topic} topic
+ * @param {integer} topicId
  * @returns {Promise<Result>}
  */
-const permanentDeleteTopic = async (topic) => {
+const permanentDeleteTopic = async (topicId) => {
     try {
-        await repository.permanentDeleteTopic(topic);
-        result.setDeleted();
+        const topic = await repository.findById(topicId);
+
+        if (!topic) {
+            const message = "Topic not found";
+            keepLog("error", message);
+            result.setError(message, StatusCodes.NOT_FOUND);
+        } else {
+            await repository.permanentDeleteTopic(topicId);
+            result.setDeleted();
+        }
     } catch (exception) {
-        const message = "Permanent topic deletion failed";
+        const message = "Topic deletion failed";
         keepLog("error", message, exception.message);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }

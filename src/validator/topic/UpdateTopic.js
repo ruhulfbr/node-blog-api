@@ -1,4 +1,4 @@
-const { body, param } = require("express-validator");
+const { body } = require("express-validator");
 const TopicStatus = require("../../enums/TopicStatus");
 const { TopicRepository: repository } = require("../../repositories");
 

@@ -35,6 +35,6 @@ router.put(
     validateRequest,
     TopicController.update
 );
-// router.delete(":topicId", validateToken, TopicController.destroy);
+router.delete("/:topicId", validateToken, TopicController.destroy);
 
 module.exports = router;
