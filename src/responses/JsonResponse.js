@@ -6,6 +6,10 @@ const handle = (res, result) => {
         return data(res, result.data);
     }
 
+    if (result.type == ServiceResultType.DELETE) {
+        return destroy(res, result.data);
+    }
+
     return error(res, result.error);
 };
 
@@ -13,6 +17,15 @@ const data = (res, data) => {
     const response = {
         status: "success",
         data: data,
+    };
+
+    return res.status(StatusCodes.OK).json(response);
+};
+
+const destroy = (res, data) => {
+    const response = {
+        status: "success",
+        message: data?.message ?? "Successfully deleted.",
     };
 
     return res.status(StatusCodes.OK).json(response);

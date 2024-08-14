@@ -10,6 +10,8 @@ services:
         command: npm run dev
         restart: always
         working_dir: /app
+        volumes:
+            - .:/app
         depends_on:
             - postgres_db
         ports:

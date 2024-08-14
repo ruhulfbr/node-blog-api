@@ -111,7 +111,7 @@ const deleteTopic = async (topicId) => {
             keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         } else {
-            await repository.deleteTopic(topicId);
+            await repository.deleteTopic(topic);
             result.setDeleted();
         }
     } catch (exception) {

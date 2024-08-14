@@ -27,6 +27,7 @@ router.post(
     validateRequest,
     TopicController.store
 );
+
 // router.get("/:topicId/posts", validateToken, TopicController.posts);
 router.put(
     "/:topicId",
