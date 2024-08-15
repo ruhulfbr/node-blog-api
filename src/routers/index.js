@@ -1,12 +1,12 @@
 const express = require("express");
-// const userRoutes = require("./users.routes");
+const userRoutes = require("./UserRoutes");
 // const loginRoute = require("./login.routes");
 const topicRoutes = require("./TopicRoutes");
 // const postRoutes = require("./posts.routes");
 
 const router = express.Router();
 
-// router.use("/user", userRoutes);
+router.use("/users", userRoutes);
 // router.use("/login", loginRoute);
 router.use("/topics", topicRoutes);
 // router.use("/post", postRoutes);

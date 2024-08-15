@@ -5,9 +5,6 @@ const response = require("../responses/JsonResponse");
 
 /**
  * Handle GET /topics
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @returns {Object} - The response object
  */
 const index = async (req, res) => {
     const result = await topicService.getTopics(req.query);
@@ -17,9 +14,6 @@ const index = async (req, res) => {
 
 /**
  * Handle GET /topics/:topicId
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @returns {Object} - The response object
  */
 const show = async (req, res) => {
     const { topicId } = req.params;
@@ -30,9 +24,6 @@ const show = async (req, res) => {
 
 /**
  * Handle POST /topics
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @returns {Object} - The response object
  */
 const store = async (req, res) => {
     const result = await topicService.createTopic(req.body);
@@ -42,9 +33,6 @@ const store = async (req, res) => {
 
 /**
  * Handle GET /topics/:topicId/posts
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @returns {Object} - The response object
  */
 const posts = async (req, res) => {
     const { topicId } = req.params;
@@ -68,9 +56,6 @@ const posts = async (req, res) => {
 
 /**
  * Handle PUT /topics/:topicId
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @returns {Object} - The response object
  */
 const update = async (req, res) => {
     const { topicId } = req.params;
@@ -81,9 +66,6 @@ const update = async (req, res) => {
 
 /**
  * Handle DELETE /topics/:topicId
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @returns {Object} - The response object
  */
 const destroy = async (req, res) => {
     const { topicId } = req.params;

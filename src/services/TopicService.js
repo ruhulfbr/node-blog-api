@@ -25,7 +25,7 @@ const getTopics = async (filters) => {
 
 /**
  * Fetch a topic by its ID.
- * @param {number} id - The ID of the topic to retrieve.
+ * @param {integer} id - The ID of the topic to retrieve.
  * @returns {Promise<Result>}
  */
 const getTopicById = async (id) => {
@@ -34,14 +34,12 @@ const getTopicById = async (id) => {
 
         if (topic) {
             result.setData(topic);
+        } else {
+            const message = "Topic not found";
 
-            return result;
+            keepLog("error", message);
+            result.setError(message, StatusCodes.NOT_FOUND);
         }
-
-        const message = "Topic not found";
-
-        keepLog("error", message);
-        result.setError(message, StatusCodes.NOT_FOUND);
     } catch (exception) {
         const message = "Failed to fetch topic";
 
@@ -128,7 +126,7 @@ const deleteTopic = async (topicId) => {
  * @param {integer} topicId
  * @returns {Promise<Result>}
  */
-const permanentDeleteTopic = async (topicId) => {
+const forceDelete = async (topicId) => {
     try {
         const topic = await repository.findById(topicId);
 
@@ -177,6 +175,6 @@ module.exports = {
     createTopic,
     updateTopic,
     deleteTopic,
-    permanentDeleteTopic,
+    forceDelete,
     getTopicPosts,
 };

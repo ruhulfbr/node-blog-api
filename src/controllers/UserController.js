@@ -1,67 +1,95 @@
-const { userService } = require("../services");
-const { mapError } = require("../utils/errorMap");
+const response = require("../responses/JsonResponse");
+const { userService: service } = require("../services");
+const { validationResult } = require("express-validator");
 
-const create = async (req, res) => {
-    const { body } = req;
-
-    const { type, token, message } = await userService.create(body);
-
-    if (type) {
-        return res.status(mapError(type)).json({ message });
-    }
-
-    res.status(201).json({ token });
+/**
+ * Get a list of users with optional filters and pagination
+ */
+const index = async (req, res) => {
+    const result = await service.getUsers(req);
+    return response.handle(res, result);
 };
 
-const login = async (req, res) => {
-    const { body } = req;
-
-    const { type, token, message } = await userService.getByEmail(body);
-
-    if (type) {
-        return res.status(mapError(type)).json({ message });
-    }
-
-    res.status(200).json({ token });
+/**
+ * Create a new user
+ */
+const store = async (req, res) => {
+    const data = req.body;
+    const result = await service.createUser(data);
+    return response.handle(res, result);
 };
 
-const getAll = async (_req, res) => {
-    const { type, message } = await userService.getAll();
-
-    if (type) {
-        return res.status(mapError(type)).json({ message });
-    }
-
-    res.status(200).json(message);
+/**
+ * Get a user by ID
+ */
+const show = async (req, res) => {
+    const { userId } = req.params;
+    const result = await service.getUserById(userId);
+    return response.handle(res, result);
 };
 
-const getById = async (req, res) => {
-    const { id } = req.params;
-    const { type, message } = await userService.getById(id);
-
-    if (type) {
-        return res.status(mapError(type)).json({ message });
-    }
-
-    res.status(200).json(message);
+/**
+ * Update a user's information
+ */
+const update = async (req, res) => {
+    const { userId } = req.params;
+    const result = await service.updateUser(userId, req.body);
+    return response.handle(res, result);
 };
 
-const remove = async (req, res) => {
-    const token = req.headers.authorization;
+/**
+ * Update a user's password
+ */
+const updatePassword = async (req, res) => {
+    const { userId } = req.params;
+    const result = await service.updateUserPassword(userId, req.body);
+    return response.handle(res, result);
+};
 
-    const { type, message } = await userService.remove(token);
+/**
+ * Update a user's status
+ */
+const updateStatus = async (req, res) => {
+    const { userId } = req.params;
+    const result = await service.updateUserStatus(userId, req.body);
+    return response.handle(res, result);
+};
 
-    if (type) {
-        return res.status(mapError(type)).json({ message });
-    }
+/**
+ * Update a user's role
+ */
+const updateRole = async (req, res) => {
+    const { userId } = req.params;
+    const result = await service.updateUserRole(userId, req.body);
+    return response.handle(res, result);
+};
 
-    res.status(204).json(message);
+/**
+ * Delete a user (soft delete)
+ */
+const destroy = async (req, res) => {
+    const { userId } = req.params;
+    const result = await service.deleteUser(userId);
+    return response.handle(res, result);
+};
+
+/**
+ * Get posts of a user
+ */
+const posts = async (req, res) => {
+    const { userId } = req.params;
+    const result = await service.getUserPosts(userId);
+    return response.handle(res, result);
 };
 
 module.exports = {
-    create,
-    login,
-    getAll,
-    getById,
-    remove,
+    index,
+    store,
+    show,
+    posts,
+    update,
+    updatePassword,
+    updateStatus,
+    updateRole,
+    destroy,
 };
