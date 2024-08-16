@@ -1,6 +1,6 @@
 const HttpStatus = require("http-status-codes");
 
-const { ServiceResultType: ResultType } = require("./../enums");
+const {ServiceResultType: ResultType} = require("./../enums");
 
 class ServiceResult {
     constructor() {
@@ -36,4 +36,4 @@ class ServiceResult {
     }
 }
 
-module.exports = ServiceResult;
+module.exports = new ServiceResult();

@@ -1,9 +1,8 @@
 const express = require("express");
-const { TopicController } = require("../controllers");
+const {TopicController} = require("../controllers");
 const ValidateToken = require("../middlewares/ValidateToken");
 const ValidateRequest = require("../middlewares/ValidateRequest");
-const CreateTopic = require("../validator/topic/CreateTopic");
-const UpdateTopic = require("../validator/topic/UpdateTopic");
+const TopicRequest = require("../validator/topic/TopicRequest");
 
 const router = express.Router();
 
@@ -12,7 +11,7 @@ router.get("/:topicId", ValidateToken, TopicController.show);
 router.post(
     "/",
     ValidateToken,
-    CreateTopic,
+    TopicRequest.createTopic,
     ValidateRequest,
     TopicController.store
 );
@@ -21,7 +20,7 @@ router.post(
 router.put(
     "/:topicId",
     ValidateToken,
-    UpdateTopic,
+    TopicRequest.updateTopic,
     ValidateRequest,
     TopicController.update
 );

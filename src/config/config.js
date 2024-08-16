@@ -16,7 +16,7 @@ const options = {
     password: process.env.DB_PASSWORD || "password",
     dialect: "postgres",
     dialectOptions: {
-        timezone: "Z",
+        timezone: "+06:00" // Dhaka Bangladesh
     },
     // logging: process.env.DEBUG !== "false",
     logging: console.log,

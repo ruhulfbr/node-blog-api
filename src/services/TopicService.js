@@ -1,14 +1,12 @@
-const { StatusCodes } = require("http-status-codes");
-const { TopicRepository: repository } = require("../repositories");
-const { keepLog } = require("./Logger");
-const ServiceResult = require("./ServiceResult");
-
-const result = new ServiceResult();
+const {StatusCodes} = require("http-status-codes");
+const {TopicRepository: repository} = require("../repositories");
+const {keepLog} = require("./Logger");
+const result = require("./ServiceResult");
 
 /**
  * Fetch topics with optional filters.
  * @param {Object} filters
- * @returns {Promise<Result>}
+ * @returns {Promise<ServiceResult>}
  */
 const getTopics = async (filters) => {
     try {
@@ -25,8 +23,8 @@ const getTopics = async (filters) => {
 
 /**
  * Fetch a topic by its ID.
- * @param {integer} id - The ID of the topic to retrieve.
- * @returns {Promise<Result>}
+ * @param {Number} id - The ID of the topic to retrieve.
+ * @returns {Promise<ServiceResult>}
  */
 const getTopicById = async (id) => {
     try {
@@ -53,7 +51,7 @@ const getTopicById = async (id) => {
 /**
  * Create a new topic.
  * @param {Object} data
- * @returns {Promise<Result>}
+ * @returns {Promise<ServiceResult>}
  */
 const createTopic = async (data) => {
     try {
@@ -70,9 +68,9 @@ const createTopic = async (data) => {
 
 /**
  * Update a topic's information.
- * @param {int} topicId
+ * @param {Number} topicId
  * @param {Object} data
- * @returns {Promise<Result>}
+ * @returns {Promise<ServiceResult>}
  */
 const updateTopic = async (topicId, data) => {
     try {
@@ -97,8 +95,8 @@ const updateTopic = async (topicId, data) => {
 
 /**
  * Soft delete a topic.
- * @param {integer} topicId
- * @returns {Promise<Result>}
+ * @param {Number} topicId
+ * @returns {Promise<ServiceResult>}
  */
 const deleteTopic = async (topicId) => {
     try {
@@ -123,20 +121,20 @@ const deleteTopic = async (topicId) => {
 
 /**
  * Permanently delete a topic.
- * @param {integer} topicId
- * @returns {Promise<Result>}
+ * @param {Number} topicId
+ * @returns {Promise<ServiceResult>}
  */
 const forceDelete = async (topicId) => {
     try {
         const topic = await repository.findById(topicId);
 
-        if (!topic) {
+        if (topic) {
+            await repository.permanentDeleteTopic(topicId);
+            result.setDeleted();
+        } else {
             const message = "Topic not found";
             keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
-        } else {
-            await repository.permanentDeleteTopic(topicId);
-            result.setDeleted();
         }
     } catch (exception) {
         const message = "Topic deletion failed";
@@ -149,17 +147,25 @@ const forceDelete = async (topicId) => {
 
 /**
  * Get posts for a topic with pagination.
- * @param {Topic} topic
+ * @param {number} topicId
  * @param {number} [limit=10]
- * @returns {Promise<Result>}
+ * @returns {Promise<ServiceResult>}
  */
-const getTopicPosts = async (topic, limit = 10) => {
+const getTopicPosts = async (topicId, limit = 10) => {
     try {
-        const posts = await repository.getTopicPostsWithPagination(
-            topic,
-            limit
-        );
-        result.setData(posts);
+        const topic = await repository.findById(topicId);
+
+        if (topic) {
+            const posts = await repository.getTopicPostsWithPagination(
+                topic,
+                limit
+            );
+            result.setData(posts);
+        } else {
+            const message = "Topic not found";
+            keepLog("error", message);
+            result.setError(message, StatusCodes.NOT_FOUND);
+        }
     } catch (exception) {
         const message = "Failed to fetch topic's posts";
         keepLog("error", message, exception.message);

@@ -1,6 +1,6 @@
-const { UserStatus } = require("../enums");
-const { User, Post, Topic } = require("../models");
-const { Op } = require("sequelize");
+const {UserStatus} = require("../enums");
+const {User, Post, Topic} = require("../models");
+const {Op} = require("sequelize");
 
 const DEFAULT_LIMIT = 10;
 
@@ -40,6 +40,17 @@ const getUsersWithFilter = async (filters = {}, limit = DEFAULT_LIMIT) => {
  * @returns {Promise<User>}
  */
 const findById = async (id) => User.findByPk(id);
+
+/**
+ * Find a user by email.
+ * @param {string} email
+ * @returns {Promise<Topic>}
+ */
+const findUserByEmail = async (email) => {
+    return User.findOne({
+        where: {email: email},
+    });
+};
 
 /**
  * Get a user's posts with pagination.
@@ -108,20 +119,21 @@ const syncTopics = async (user, topicIds) => {
 /**
  * Delete a user (soft delete).
  * @param {User} user
- * @returns {Promise<boolean>}
+ * @returns {Promise<void>}
  */
 const deleteUser = async (user) => user.destroy();
 
 /**
  * Permanently delete a user.
  * @param {User} user
- * @returns {Promise<boolean>}
+ * @returns {Promise<void>}
  */
-const permanentDeleteUser = async (user) => user.destroy({ force: true });
+const permanentDeleteUser = async (user) => user.destroy({force: true});
 
 module.exports = {
     getUsersWithFilter,
     findById,
+    findUserByEmail,
     userPostsWithPagination,
     createUser,
     updateUser,

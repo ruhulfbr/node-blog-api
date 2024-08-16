@@ -1,10 +1,9 @@
-const { StatusCodes } = require("http-status-codes");
+const {StatusCodes} = require("http-status-codes");
 const bcrypt = require("bcrypt");
-const { UserRepository: repository } = require("../repositories");
+const {keepLog} = require("./Logger");
+const {UserRepository: repository} = require("../repositories");
 
-const ServiceResult = require("./ServiceResult");
-
-const result = new ServiceResult();
+const result = require("./ServiceResult");
 
 /**
  * Get users with optional filters and pagination.
@@ -17,7 +16,7 @@ const getUsers = async (filters) => {
         result.setData(users);
     } catch (error) {
         const message = "Failed to fetch users";
-        console.error(message, error);
+        keepLog("error", message, error);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
@@ -27,7 +26,7 @@ const getUsers = async (filters) => {
 /**
  * Fetch a user by its ID.
  * @param {integer} id - The ID of the user to retrieve.
- * @returns {Promise<Result>}
+ * @returns {Promise<ServiceResult>}
  */
 const getUserById = async (id) => {
     try {
@@ -37,14 +36,11 @@ const getUserById = async (id) => {
             result.setData(user);
         } else {
             const message = "User not found";
-
-            keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         }
-    } catch (exception) {
+    } catch (error) {
         const message = "Failed to fetch user";
-
-        keepLog("error", message, exception);
+        keepLog("error", message, error);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
@@ -64,7 +60,7 @@ const createUser = async (data) => {
         result.setData(user);
     } catch (error) {
         const message = "User creation failed";
-        console.error(message, error);
+        keepLog('error', message, error);
         result.setError(message, 400);
     }
 
@@ -73,7 +69,7 @@ const createUser = async (data) => {
 
 /**
  * Update a user's information.
- * @param {integer} userId
+ * @param {number} userId
  * @param {Object} data
  * @returns {Promise<ServiceResult>}
  */
@@ -86,14 +82,11 @@ const updateUser = async (userId, data) => {
             result.setData(updatedUser);
         } else {
             const message = "User not found";
-
-            keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         }
     } catch (error) {
         const message = "User update failed";
-
-        console.error(message, error);
+        keepLog('error', message, error);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
@@ -102,7 +95,7 @@ const updateUser = async (userId, data) => {
 
 /**
  * Update a user's password.
- * @param {Integer} userId
+ * @param {Number} userId
  * @param {Object} data
  * @returns {Promise<ServiceResult>}
  */
@@ -118,14 +111,11 @@ const updateUserPassword = async (userId, data) => {
             result.setData(updatedUser);
         } else {
             const message = "User not found";
-
-            keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         }
     } catch (error) {
         const message = "User password update failed";
-
-        console.error(message, error);
+        keepLog('error', message, error);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
@@ -134,7 +124,7 @@ const updateUserPassword = async (userId, data) => {
 
 /**
  * Update a user's status.
- * @param {Integer} userId
+ * @param {Number} userId
  * @param {Object} data
  * @returns {Promise<ServiceResult>}
  */
@@ -149,13 +139,11 @@ const updateUserStatus = async (userId, data) => {
             result.setData(updatedUser);
         } else {
             const message = "User not found";
-
-            keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         }
     } catch (error) {
         const message = "User status update failed";
-        console.error(message, error);
+        keepLog('error', message, error);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
@@ -164,7 +152,7 @@ const updateUserStatus = async (userId, data) => {
 
 /**
  * Update a user's role.
- * @param {Integer} userId
+ * @param {Number} userId
  * @param {Object} data
  * @returns {Promise<ServiceResult>}
  */
@@ -179,13 +167,11 @@ const updateUserRole = async (userId, data) => {
             result.setData(updatedUser);
         } else {
             const message = "User not found";
-
-            keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         }
     } catch (error) {
         const message = "User role update failed";
-        console.error(message, error);
+        keepLog('error', message, error);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
@@ -194,7 +180,7 @@ const updateUserRole = async (userId, data) => {
 
 /**
  * Soft delete a user.
- * @param {Integer} userId
+ * @param {Number} userId
  * @returns {Promise<ServiceResult>}
  */
 const deleteUser = async (userId) => {
@@ -206,14 +192,11 @@ const deleteUser = async (userId) => {
             result.setDeleted();
         } else {
             const message = "User not found";
-
-            keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         }
     } catch (error) {
         const message = "User deletion failed";
-
-        console.error(message, error);
+        keepLog("error", message, error);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
@@ -222,7 +205,7 @@ const deleteUser = async (userId) => {
 
 /**
  * Permanently delete a user.
- * @param {Integer} userId
+ * @param {Number} userId
  * @returns {Promise<ServiceResult>}
  */
 const forceDelete = async (userId) => {
@@ -234,14 +217,11 @@ const forceDelete = async (userId) => {
             result.setDeleted();
         } else {
             const message = "User not found";
-
-            keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         }
     } catch (error) {
         const message = "User deletion failed";
-
-        console.error(message, error);
+        keepLog("error", message, error);
         result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
@@ -250,7 +230,7 @@ const forceDelete = async (userId) => {
 
 /**
  * Get a user's posts.
- * @param {Integer} userId
+ * @param {Number} userId
  * @returns {Promise<ServiceResult>}
  */
 const getUserPosts = async (userId) => {
@@ -262,14 +242,12 @@ const getUserPosts = async (userId) => {
             result.setData(posts);
         } else {
             const message = "User not found";
-
-            keepLog("error", message);
             result.setError(message, StatusCodes.NOT_FOUND);
         }
     } catch (error) {
         const message = "User's post fetching failed";
-        console.error(message, error);
-        result.setError(message, 400);
+        keepLog("error", message, error);
+        result.setError(message, StatusCodes.BAD_REQUEST);
     }
 
     return result;

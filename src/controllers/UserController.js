@@ -1,12 +1,12 @@
 const response = require("../responses/JsonResponse");
-const { userService: service } = require("../services");
-const { validationResult } = require("express-validator");
+const {userService} = require("../services");
 
 /**
  * Get a list of users with optional filters and pagination
  */
 const index = async (req, res) => {
-    const result = await service.getUsers(req);
+    const result = await userService.getUsers(req);
+
     return response.handle(res, result);
 };
 
@@ -15,7 +15,8 @@ const index = async (req, res) => {
  */
 const store = async (req, res) => {
     const data = req.body;
-    const result = await service.createUser(data);
+    const result = await userService.createUser(data);
+
     return response.handle(res, result);
 };
 
@@ -23,8 +24,9 @@ const store = async (req, res) => {
  * Get a user by ID
  */
 const show = async (req, res) => {
-    const { userId } = req.params;
-    const result = await service.getUserById(userId);
+    const {userId} = req.params;
+    const result = await userService.getUserById(userId);
+
     return response.handle(res, result);
 };
 
@@ -32,8 +34,9 @@ const show = async (req, res) => {
  * Update a user's information
  */
 const update = async (req, res) => {
-    const { userId } = req.params;
-    const result = await service.updateUser(userId, req.body);
+    const {userId} = req.params;
+    const result = await userService.updateUser(userId, req.body);
+
     return response.handle(res, result);
 };
 
@@ -41,8 +44,9 @@ const update = async (req, res) => {
  * Update a user's password
  */
 const updatePassword = async (req, res) => {
-    const { userId } = req.params;
-    const result = await service.updateUserPassword(userId, req.body);
+    const {userId} = req.params;
+    const result = await userService.updateUserPassword(userId, req.body);
+
     return response.handle(res, result);
 };
 
@@ -50,8 +54,9 @@ const updatePassword = async (req, res) => {
  * Update a user's status
  */
 const updateStatus = async (req, res) => {
-    const { userId } = req.params;
-    const result = await service.updateUserStatus(userId, req.body);
+    const {userId} = req.params;
+    const result = await userService.updateUserStatus(userId, req.body);
+
     return response.handle(res, result);
 };
 
@@ -59,8 +64,9 @@ const updateStatus = async (req, res) => {
  * Update a user's role
  */
 const updateRole = async (req, res) => {
-    const { userId } = req.params;
-    const result = await service.updateUserRole(userId, req.body);
+    const {userId} = req.params;
+    const result = await userService.updateUserRole(userId, req.body);
+
     return response.handle(res, result);
 };
 
@@ -68,8 +74,9 @@ const updateRole = async (req, res) => {
  * Delete a user (soft delete)
  */
 const destroy = async (req, res) => {
-    const { userId } = req.params;
-    const result = await service.deleteUser(userId);
+    const {userId} = req.params;
+    const result = await userService.deleteUser(userId);
+
     return response.handle(res, result);
 };
 
@@ -77,8 +84,9 @@ const destroy = async (req, res) => {
  * Get posts of a user
  */
 const posts = async (req, res) => {
-    const { userId } = req.params;
-    const result = await service.getUserPosts(userId);
+    const {userId} = req.params;
+    const result = await userService.getUserPosts(userId);
+
     return response.handle(res, result);
 };
 

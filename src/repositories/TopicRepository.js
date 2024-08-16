@@ -1,5 +1,5 @@
-const { Topic, Post } = require("../models");
-const { Op } = require("sequelize");
+const {Topic, Post} = require("../models");
+const {Op} = require("sequelize");
 
 /**
  * Get all topics with optional filters.
@@ -39,7 +39,7 @@ const findById = async (id) => {
  */
 const findByName = async (name) => {
     return Topic.findOne({
-        where: { name: name },
+        where: {name: name},
     });
 };
 
@@ -87,11 +87,11 @@ const deleteTopic = async (topic) => {
 
 /**
  * Permanently delete a topic.
- * @param {Topic} topic
+ * @param {Number} topic
  * @returns {Promise<boolean>}
  */
 const permanentDeleteTopic = async (topic) => {
-    return topic.destroy({ force: true }); // Permanent delete
+    return topic.destroy({force: true}); // Permanent delete
 };
 
 module.exports = {
